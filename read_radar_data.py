@@ -64,7 +64,7 @@ def range_profile_classifier(range_profile, range_array):
                 "Obj_detection_flag": detected,
                 "Threshold": thresh,
                 "Sum": overall_sum,
-                "Scene_Image": img
+                "Scene_Image": img.tolist()
                 }
 
     print(obj_dict)
