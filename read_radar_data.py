@@ -3,6 +3,7 @@ import time
 import numpy as np
 import os
 from dependencies.database_class import DatabaseConnector
+from dependencies.central_database_update import write_bunker_status
 import matplotlib.pyplot as plt
 
 radar_type = 1642
@@ -54,10 +55,10 @@ def range_profile_classifier(range_profile, range_array):
 
     if overall_sum > thresh:
         occupancy_type = "path not clear"
-        detected = True
+        detected = "Yes"
     else:
         occupancy_type = "path clear"
-        detected = False
+        detected = "No"
 
     obj_dict = {"Obj_Detected": occupancy_type,
                 "Obj_detection_flag": detected,
@@ -69,6 +70,7 @@ def range_profile_classifier(range_profile, range_array):
     print(obj_dict)
 
     db_connector.insert_data(obj_dict)
+    write_bunker_status(detected)
 
     plt.title(f"{occupancy_type}")
     plt.imshow(img, extent=[range_array[0], range_array[-1], 0, 10])
