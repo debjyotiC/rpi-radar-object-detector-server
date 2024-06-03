@@ -5,6 +5,8 @@ import os
 from dependencies.database_class import DatabaseConnector
 import matplotlib.pyplot as plt
 
+radar_type = 1642
+
 CLIport = {}
 Dataport = {}
 byteBuffer = np.zeros(2 ** 15, dtype='uint8')
@@ -12,7 +14,10 @@ byteBufferLength = 0
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
-configFileName = f"{script_dir}/config_files/spot_3.cfg"
+if radar_type == 1642:
+    configFileName = f"{script_dir}/config_files/AWR1642.cfg"
+elif radar_type == 2944:
+    configFileName = f"{script_dir}/config_files/AWR2944.cfg"
 
 db_connector = DatabaseConnector(f"{script_dir}/database/radar_database.db")
 db_connector.connect()
@@ -85,12 +90,19 @@ def serialConfig(configFileName):
             # Open the serial ports for the configuration and the data ports
 
             # Raspberry Pi / Ubuntu
-            CLIport = serial.Serial('/dev/ttyACM0', 115200)
-            Dataport = serial.Serial('/dev/ttyACM1', 921600)
+            # CLIport = serial.Serial('/dev/ttyACM0', 115200)
+            # Dataport = serial.Serial('/dev/ttyACM1', 921600)
 
             # Windows
             # CLIport = serial.Serial('COM4', 115200)
             # Dataport = serial.Serial('COM5', 852272)
+
+            if radar_type == 1642:
+                CLIport = serial.Serial('/dev/ttyACM0', 115200)
+                Dataport = serial.Serial('/dev/ttyACM1', 921600)
+            elif radar_type == 2944:
+                CLIport = serial.Serial('COM4', 115200)
+                Dataport = serial.Serial('COM5', 852272)
 
             port_found = True
 
