@@ -14,9 +14,8 @@ def data_classifier():
     os.system(f"{python_executable_path} {script_dir}/read_radar_data.py")
 
 
-thread1 = threading.Thread(target=web_server)
-
-thread2 = threading.Thread(target=data_classifier)
+thread1 = threading.Thread(target=data_classifier)
+thread2 = threading.Thread(target=web_server)
 
 thread1.start()
 thread2.start()
