@@ -23,7 +23,7 @@ class DatabaseConnector:
             conn.execute('''
             CREATE TABLE IF NOT EXISTS obj_table (
                 Obj_Detected TEXT,
-                Obj_detection_flag BOOLEAN,
+                Obj_detection_flag TEXT,
                 Threshold REAL,
                 Sum REAL,
                 Scene_Image TEXT
