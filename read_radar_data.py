@@ -54,10 +54,10 @@ def range_profile_classifier(range_profile):
 
     if overall_sum > thresh:
         path_clearance = "path not clear"
-        detected = "yes"
+        detected = "y"
     else:
         path_clearance = "path clear"
-        detected = "no"
+        detected = "n"
 
     obj_dict = {"Obj_Detected": path_clearance,
                 "Obj_detection_flag": detected,
