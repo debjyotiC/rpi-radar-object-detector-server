@@ -63,7 +63,7 @@ def range_profile_classifier(range_profile):
                 "Obj_detection_flag": detected,
                 "Threshold": thresh,
                 "Sum": overall_sum,
-                "Scene_Image": img
+                "Scene_Image": img.tolist()
                 }
     debug_log = dict(list(obj_dict.items())[:4])
     db_connector.insert_data(obj_dict)
