@@ -12,7 +12,7 @@ def robot_data():
     latest_data = db_connector.fetch_latest_data()
     # Dictionary with data
     obj_dict = {
-        "Obj_Detected": latest_data['Obj_Detected'],
+        "Path_Status": latest_data['Path_Status'],
         "Obj_detection_flag": latest_data['Obj_detection_flag'],
         "Threshold": latest_data['Threshold'],
         "Sum": latest_data['Sum'],

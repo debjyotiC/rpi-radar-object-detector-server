@@ -38,8 +38,7 @@ def cell_averaging_peak_detector(matrix, threshold=0.5):
     return peak_detected_matrix
 
 
-def range_profile_classifier(range_profile, range_array):
-    plt.clf()
+def range_profile_classifier(range_profile):
     range_profile = 20 * np.log10(range_profile)
     stacked_arr = np.vstack((range_profile,) * 10)
     img = cell_averaging_peak_detector(stacked_arr, threshold=70.1)
@@ -54,29 +53,23 @@ def range_profile_classifier(range_profile, range_array):
     thresh = 70.0  # change it according to your need
 
     if overall_sum > thresh:
-        occupancy_type = "path not clear"
-        detected = "Yes"
+        path_clearance = "path not clear"
+        detected = "yes"
     else:
-        occupancy_type = "path clear"
-        detected = "No"
+        path_clearance = "path clear"
+        detected = "no"
 
-    obj_dict = {"Obj_Detected": occupancy_type,
+    obj_dict = {"Path_Status": path_clearance,
                 "Obj_detection_flag": detected,
                 "Threshold": thresh,
                 "Sum": overall_sum,
                 "Scene_Image": img
                 }
-
-    print(obj_dict)
-
+    debug_log = dict(list(obj_dict.items())[:4])
     db_connector.insert_data(obj_dict)
     write_bunker_status(detected)
 
-    plt.title(f"{occupancy_type}")
-    plt.imshow(img, extent=[range_array[0], range_array[-1], 0, 10])
-    plt.xlabel("Range (m)")
-    plt.ylabel("Time (s)")
-    plt.pause(0.1)
+    print(debug_log)
 
 
 # Function to configure the serial ports and send the data from
@@ -343,7 +336,7 @@ def readAndParseData16xx(Dataport, configParameters):
                 rangeProfile = byteBuffer[idX:idX + (tlv_length - 8)].view(np.uint16)
                 idX += (tlv_length - 8)
                 rangeArray = np.array(range(configParameters["numRangeBins"])) * configParameters["rangeIdxToMeters"]
-                range_profile_classifier(rangeProfile, rangeArray)
+                range_profile_classifier(rangeProfile)
 
             elif tlv_type == MMWDEMO_OUTPUT_MSG_RANGE_DOPPLER_HEAT_MAP:
 
@@ -409,7 +402,7 @@ while True:
             frameData[currentIndex] = detObj
             currentIndex += 1
 
-        time.sleep(0.03)  # Sampling frequency of 30 Hz
+        time.sleep(0.04)  # Sampling frequency of 40 Hz
 
     # Stop the program and close everything if Ctrl + c is pressed
     except KeyboardInterrupt:
