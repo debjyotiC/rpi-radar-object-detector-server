@@ -59,7 +59,7 @@ def range_profile_classifier(range_profile):
         path_clearance = "path clear"
         detected = "no"
 
-    obj_dict = {"Path_Status": path_clearance,
+    obj_dict = {"Obj_Detected": path_clearance,
                 "Obj_detection_flag": detected,
                 "Threshold": thresh,
                 "Sum": overall_sum,
