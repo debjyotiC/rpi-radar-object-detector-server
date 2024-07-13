@@ -4,7 +4,6 @@ import numpy as np
 import os
 from dependencies.database_class import DatabaseConnector
 from dependencies.central_database_update import write_bunker_status
-import matplotlib.pyplot as plt
 
 radar_type = 1642
 
@@ -40,6 +39,7 @@ def cell_averaging_peak_detector(matrix, threshold=0.5):
 
 def range_profile_classifier(range_profile):
     range_profile = 20 * np.log10(range_profile)
+
     stacked_arr = np.vstack((range_profile,) * 10)
     img = cell_averaging_peak_detector(stacked_arr, threshold=70.1)
 
@@ -50,7 +50,7 @@ def range_profile_classifier(range_profile):
 
     overall_sum = np.sum(img)
 
-    thresh = 70.0  # change it according to your need
+    thresh = 100.0  # change it according to your need
 
     if overall_sum > thresh:
         path_clearance = "path not clear"
@@ -67,7 +67,9 @@ def range_profile_classifier(range_profile):
                 }
     debug_log = dict(list(obj_dict.items())[:4])
     db_connector.insert_data(obj_dict)
-    write_bunker_status(detected)
+
+    if radar_type == 1642:
+        write_bunker_status(detected)
 
     print(debug_log)
 
@@ -130,7 +132,7 @@ def parseConfigFile(configFileName):
 
         # Hard code the number of antennas, change if other configuration is used
         numRxAnt = 4
-        numTxAnt = 2
+        numTxAnt = 4
 
         # Get the information about the profile configuration
         if "profileCfg" in splitWords[0]:
@@ -333,13 +335,11 @@ def readAndParseData16xx(Dataport, configParameters):
                 dataOK = 1
 
             elif tlv_type == MMWDEMO_UART_MSG_RANGE_PROFILE:
-                rangeProfile = byteBuffer[idX:idX + (tlv_length - 8)].view(np.uint16)
+                rangeProfile = np.frombuffer(byteBuffer[idX:idX + (tlv_length - 8)], dtype=np.uint16)
                 idX += (tlv_length - 8)
-                rangeArray = np.array(range(configParameters["numRangeBins"])) * configParameters["rangeIdxToMeters"]
                 range_profile_classifier(rangeProfile)
 
             elif tlv_type == MMWDEMO_OUTPUT_MSG_RANGE_DOPPLER_HEAT_MAP:
-
                 # Get the number of bytes to read
                 numBytes = int(2 * configParameters["numRangeBins"] * configParameters["numDopplerBins"])
                 # Convert the raw data to int16 array
